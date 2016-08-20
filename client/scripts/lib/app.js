@@ -3,27 +3,32 @@ import 'angular-animate';
 import 'angular-meteor';
 import 'angular-sanitize';
 import 'angular-moment';
+import 'angular-meteor-auth';
 import 'angular-ui-router';
 import 'ionic-scripts';
 import Angular from 'angular';
 import Loader from 'angular-ecmascript/module-loader';
-
 import { Meteor } from 'meteor/meteor';
 
 // Modules
 import ChatsCtrl from '../controllers/chats.controller';
 import ChatCtrl from '../controllers/chat.controller';
+import LoginCtrl from '../controllers/login.controller';
+import ConfirmationCtrl from '../controllers/confirmation.controller';
+import ProfileCtrl from '../controllers/profile.controller';
+import SettingCtrl from '../controllers/setting.controller';
+
 import InputDirective from '../directives/input.directive';
 
-
 import CalendarFilter from '../filters/calendar.filter';
-import RoutesConfig from '../routes';
+import Routes from '../routes';
 
 const App = 'Whatsapp';
 
 // App
 Angular.module(App, [
     'angular-meteor',
+    'angular-meteor.auth',
     'angularMoment',
     'ionic'
 ]);
@@ -33,9 +38,13 @@ Angular.module(App, [
 new Loader(App)
     .load(ChatsCtrl)
     .load(ChatCtrl)
+    .load(LoginCtrl)
+    .load(ConfirmationCtrl)
+    .load(ProfileCtrl)
+    .load(SettingCtrl)
     .load(InputDirective)
     .load(CalendarFilter)
-    .load(RoutesConfig);
+    .load(Routes);
 
 
 // Startup

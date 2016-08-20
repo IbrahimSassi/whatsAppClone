@@ -2,17 +2,17 @@ import Ionic from 'ionic-scripts';
 import { _ } from 'meteor/underscore';
 import { Meteor } from 'meteor/meteor';
 import { Controller } from 'angular-ecmascript/module-helpers';
-import { Chats,Messages } from '../../../lib/collections';
- 
+import { Chats, Messages } from '../../../lib/collections';
+
 export default class ChatCtrl extends Controller {
   constructor() {
     super(...arguments);
- 
+
     this.chatId = this.$stateParams.chatId;
-    this.isAndroid = Ionic.Platform.isWebView() && Ionic.Platform.isAndroid();
+    this.isIOS = Ionic.Platform.isWebView() && Ionic.Platform.isIOS();
     this.isCordova = Meteor.isCordova;
 
- 
+
     this.helpers({
       messages() {
         return Messages.find({ chatId: this.chatId });
@@ -21,43 +21,63 @@ export default class ChatCtrl extends Controller {
         return Chats.findOne(this.chatId);
       }
     });
+
+
+    this.autoScroll();
+
   }
 
-    sendMessage() {
+  sendMessage() {
     if (_.isEmpty(this.message)) return;
- 
+
     this.callMethod('newMessage', {
       text: this.message,
       type: 'text',
       chatId: this.chatId
     });
- 
-    delete this.message;
 
+    delete this.message;
   }
 
-    inputUp () {
+
+  autoScroll() {
+    let recentMessagesNum = this.messages.length;
+
+    this.autorun(() => {
+      const currMessagesNum = this.getCollectionReactively('messages').length;
+      const animate = recentMessagesNum != currMessagesNum;
+      recentMessagesNum = currMessagesNum;
+      this.scrollBottom(animate);
+    });
+  }
+
+
+
+
+
+
+  inputUp() {
     if (this.isIOS) {
       this.keyboardHeight = 216;
     }
- 
+
     this.scrollBottom(true);
   }
- 
-  inputDown () {
+
+  inputDown() {
     if (this.isIOS) {
       this.keyboardHeight = 0;
     }
- 
+
     this.$ionicScrollDelegate.$getByHandle('chatScroll').resize();
   }
- 
-  closeKeyboard () {
+
+  closeKeyboard() {
     if (this.isCordova) {
       cordova.plugins.Keyboard.close();
     }
   }
- 
+
   scrollBottom(animate) {
     this.$timeout(() => {
       this.$ionicScrollDelegate.$getByHandle('chatScroll').scrollBottom(animate);
@@ -72,5 +92,5 @@ export default class ChatCtrl extends Controller {
 
 
 
- 
+
 ChatCtrl.$inject = ['$stateParams', '$timeout', '$ionicScrollDelegate'];
